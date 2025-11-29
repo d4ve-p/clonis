@@ -1,0 +1,21 @@
+{{define "content"}}
+<div class="max-w-md mx-auto mt-20">
+    <div class="bg-zinc-900 border border-zinc-800 rounded-lg shadow-xl p-8">
+        <h2 class="text-xl font-semibold mb-6 text-center text-zinc-100">System Locked</h2>
+        
+        <form action="/login" method="POST" class="space-y-5">
+            <div>
+                <label class="block text-xs font-bold text-zinc-500 uppercase mb-2">Password</label>
+                <input type="password" name="password" required autofocus
+                       class="w-full px-4 py-3 bg-zinc-950 border border-zinc-700 rounded text-zinc-100 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition placeholder-zinc-600">
+            </div>
+            
+            <button type="submit" 
+                    class="w-full bg-indigo-600 text-white font-medium py-3 rounded hover:bg-indigo-500 transition shadow-lg shadow-indigo-900/20">
+                Unlock Interface
+            </button>
+        </form>
+    </div>
+    <p class="text-center text-zinc-600 text-xs mt-6">Clonis Backup Manager &copy; 2025</p>
+</div>
+{{end}}
