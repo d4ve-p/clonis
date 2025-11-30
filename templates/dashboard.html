@@ -9,43 +9,30 @@
             <div class="p-6 border-b border-zinc-800 flex justify-between items-center">
                 <h3 class="font-semibold text-lg text-zinc-100">Backup Manifest</h3>
                 <span class="text-xs font-mono bg-zinc-800 text-zinc-400 px-2 py-1 rounded border border-zinc-700">
-                    {{len .Paths}} ITEMS
+                    MANIFEST
                 </span>
             </div>
 
             <div class="p-6">
-                <!-- List of Paths -->
-                <div class="space-y-3 mb-6">
-                    {{range .Paths}}
-                    <div class="flex justify-between items-center p-3 bg-zinc-950/50 border border-zinc-800 rounded group hover:border-zinc-600 transition duration-200">
-                        <div class="flex items-center space-x-4">
-                            <span class="text-zinc-500 text-lg">
-                                {{if eq .Type "folder"}}📂{{else}}📄{{end}}
-                            </span>
-                            <span class="font-mono text-sm text-zinc-300">{{.Path}}</span>
-                        </div>
-                        <button class="text-zinc-600 hover:text-red-400 transition px-2 py-1 rounded hover:bg-zinc-900">
-                            &times;
-                        </button>
-                    </div>
-                    {{else}}
-                    <div class="text-center py-8 border-2 border-dashed border-zinc-800 rounded">
-                        <p class="text-zinc-500 text-sm">No paths configured.</p>
-                        <p class="text-zinc-600 text-xs mt-1">Add a file or folder below.</p>
-                    </div>
-                    {{end}}
-                </div>
+                
+                <!-- The Dynamic List Container -->
+                {{template "path_list.html" .}}
 
                 <!-- Add Path Form -->
                 <div class="border-t border-zinc-800 pt-6 mt-6">
                     <h4 class="text-zinc-400 text-sm font-medium mb-3">Add New Path</h4>
                     
-                    <form action="/add-path" method="POST" class="space-y-4">
+                    <!-- HTMX Form -->
+                    <form hx-post="/add-path" 
+                          hx-target="#paths-list" 
+                          hx-swap="outerHTML"
+                          hx-on::after-request="this.reset()"
+                          class="space-y-4">
+                        
                         <div class="flex gap-2">
                             <input type="text" id="path-input" name="path" placeholder="/hostfs/..." required
-                                    class="flex-1 px-3 py-2 bg-zinc-950 border border-zinc-700 rounded text-sm text-zinc-300 font-mono focus:border-indigo-500 outline-none">
+                                   class="flex-1 px-3 py-2 bg-zinc-950 border border-zinc-700 rounded text-sm text-zinc-300 font-mono focus:border-indigo-500 outline-none">
                             
-                            <!-- Hidden input for type, updated by JS -->
                             <input type="hidden" id="type-input" name="type" value="folder">
 
                             <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded text-sm hover:bg-indigo-500">
@@ -58,14 +45,12 @@
                     <div class="mt-4 border border-zinc-700 rounded-lg overflow-hidden bg-zinc-950">
                         <div class="p-2 bg-zinc-900 border-b border-zinc-700 flex justify-between items-center">
                             <span class="text-xs font-bold text-zinc-500 uppercase">File Browser</span>
-                            <!-- Initial Load Trigger -->
                             <button hx-get="/browse?path=" hx-target="#file-browser" 
                                     class="text-xs text-indigo-400 hover:text-indigo-300">
                                 Reset to Root
                             </button>
                         </div>
                         
-                        <!-- HTMX Target: Content loads here -->
                         <div id="file-browser" hx-get="/browse?path=" hx-trigger="load">
                             <div class="p-4 text-center text-zinc-600 text-sm animate-pulse">
                                 Loading filesystem...
@@ -73,6 +58,7 @@
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
 
@@ -147,6 +133,7 @@
             </div>
         </div>
     </div>
+
     <!-- JavaScript helper to populate the input form -->
     <script>
         function selectPath(path, type) {
