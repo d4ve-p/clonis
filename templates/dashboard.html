@@ -37,22 +37,42 @@
                 </div>
 
                 <!-- Add Path Form -->
-                <form class="flex gap-3">
-                    <div class="flex-1 relative">
-                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <span class="text-zinc-500 text-sm">/</span>
+                <div class="border-t border-zinc-800 pt-6 mt-6">
+                    <h4 class="text-zinc-400 text-sm font-medium mb-3">Add New Path</h4>
+                    
+                    <form action="/add-path" method="POST" class="space-y-4">
+                        <div class="flex gap-2">
+                            <input type="text" id="path-input" name="path" placeholder="/hostfs/..." required
+                                    class="flex-1 px-3 py-2 bg-zinc-950 border border-zinc-700 rounded text-sm text-zinc-300 font-mono focus:border-indigo-500 outline-none">
+                            
+                            <!-- Hidden input for type, updated by JS -->
+                            <input type="hidden" id="type-input" name="type" value="folder">
+
+                            <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded text-sm hover:bg-indigo-500">
+                                Add
+                            </button>
                         </div>
-                        <input type="text" name="path" placeholder="hostfs/var/www..." 
-                               class="w-full pl-6 pr-4 py-2 bg-zinc-950 border border-zinc-700 rounded text-sm text-zinc-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none">
+                    </form>
+
+                    <!-- File Browser Component -->
+                    <div class="mt-4 border border-zinc-700 rounded-lg overflow-hidden bg-zinc-950">
+                        <div class="p-2 bg-zinc-900 border-b border-zinc-700 flex justify-between items-center">
+                            <span class="text-xs font-bold text-zinc-500 uppercase">File Browser</span>
+                            <!-- Initial Load Trigger -->
+                            <button hx-get="/browse?path=" hx-target="#file-browser" 
+                                    class="text-xs text-indigo-400 hover:text-indigo-300">
+                                Reset to Root
+                            </button>
+                        </div>
+                        
+                        <!-- HTMX Target: Content loads here -->
+                        <div id="file-browser" hx-get="/browse?path=" hx-trigger="load">
+                            <div class="p-4 text-center text-zinc-600 text-sm animate-pulse">
+                                Loading filesystem...
+                            </div>
+                        </div>
                     </div>
-                    <select name="type" class="bg-zinc-950 border border-zinc-700 text-zinc-300 text-sm rounded px-3 py-2 outline-none focus:border-indigo-500">
-                        <option value="folder">Folder</option>
-                        <option value="file">File</option>
-                    </select>
-                    <button type="button" class="bg-zinc-800 text-zinc-200 px-4 py-2 rounded text-sm font-medium hover:bg-zinc-700 border border-zinc-700 transition">
-                        Add
-                    </button>
-                </form>
+                </div>
             </div>
         </div>
 
@@ -127,5 +147,12 @@
             </div>
         </div>
     </div>
+    <!-- JavaScript helper to populate the input form -->
+    <script>
+        function selectPath(path, type) {
+            document.getElementById('path-input').value = path;
+            document.getElementById('type-input').value = type;
+        }
+    </script>
 </div>
 {{end}}

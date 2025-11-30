@@ -1,0 +1,28 @@
+<div class="p-2 bg-zinc-900 border-b border-zinc-700 flex justify-between items-center text-sm font-mono text-zinc-400">
+    <span>Current: {{.Current}}</span>
+</div>
+<ul class="max-h-64 overflow-y-auto">
+    {{range .Items}}
+    <li class="flex justify-between items-center p-2 hover:bg-zinc-800 cursor-pointer group border-b border-zinc-800/50"
+        {{if eq .Type.String "folder"}}
+            hx-get="/browse?path={{.Path}}" 
+            hx-target="#file-browser"
+        {{end}}>
+        
+        <div class="flex items-center gap-2 overflow-hidden">
+            <span class="text-lg">{{if eq .Type.String "folder"}}📂{{else}}📄{{end}}</span>
+            <span class="{{if eq .Name ".."}}text-indigo-400 font-bold{{else}}text-zinc-300{{end}} truncate">
+                {{.Name}}
+            </span>
+        </div>
+
+        <!-- Action Button -->
+        <button 
+            onclick="selectPath('{{.Path}}', '{{.Type}}')"
+            type="button"
+            class="text-xs bg-zinc-800 hover:bg-indigo-600 text-zinc-400 hover:text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition">
+            Select
+        </button>
+    </li>
+    {{end}}
+</ul>

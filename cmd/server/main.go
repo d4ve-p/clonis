@@ -45,6 +45,9 @@ func main() {
 	// Dashboard
 	dashboardHandler := http.HandlerFunc(uiHandler.DashboardHandler)
 	mux.Handle("/", authManager.Middleware(dashboardHandler))
+	// Dashboard - Browser
+	browserHandler := http.HandlerFunc(uiHandler.BrowseHandler)
+	mux.Handle("/browse", authManager.Middleware(browserHandler))
 	
 	port := os.Getenv("PORT")
 	log.Printf("Server running on :%v\n", port)
