@@ -11,19 +11,19 @@ import (
 func (h* Handler) DashboardHandler(w http.ResponseWriter, r *http.Request) {
 	paths, err := h.Store.GetPaths()
 	if err != nil {
-		http.Error(w, "Failed to load paths", http.StatusInternalServerError)
+		h.RenderError(w, "Failed to load paths", err)
 		return
 	}
 	
 	logs, err := h.Store.GetRecentLogs(10)
 	if err != nil {
-		http.Error(w, "Failed to load logs", http.StatusInternalServerError)
+		h.RenderError(w, "Failed to get logs", err)
 		return
 	}
 	
 	settings, err := h.Store.GetSettings()
 	if err != nil {
-		http.Error(w, "Failed to load settings", http.StatusInternalServerError)
+		h.RenderError(w, "Failed to load settings", err)
 		return
 	}
 	
@@ -42,6 +42,7 @@ func (h* Handler) DashboardHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl := template.Must(template.ParseFiles(
 		"templates/layout.html",
 		"templates/dashboard.html",
+		"templates/fragments/path_list.html",
 	))
 	
 	err = tmpl.ExecuteTemplate(w, "layout", data)

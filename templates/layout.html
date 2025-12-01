@@ -1,45 +1,70 @@
 {{define "layout"}}
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clonis Backup</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- HTMX -->
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
-    <link rel="stylesheet" href="/static/style.css">
-    <style>
-        /* Custom scrollbar for that classic dark feel */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #18181b; }
-        ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #52525b; }
-    </style>
-</head>
-<body class="bg-zinc-950 text-zinc-300 font-sans min-h-screen selection:bg-indigo-500/30">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Clonis Backup</title>
+        <!-- Tailwind CSS -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <!-- HTMX -->
+        <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+        <link rel="stylesheet" href="/static/style.css" />
+        <style>
+            /* Custom scrollbar for that classic dark feel */
+            ::-webkit-scrollbar {
+                width: 8px;
+            }
+            ::-webkit-scrollbar-track {
+                background: #18181b;
+            }
+            ::-webkit-scrollbar-thumb {
+                background: #3f3f46;
+                border-radius: 4px;
+            }
+            ::-webkit-scrollbar-thumb:hover {
+                background: #52525b;
+            }
+        </style>
+    </head>
+    <body
+        class="bg-zinc-950 text-zinc-300 font-sans min-h-screen selection:bg-indigo-500/30"
+    >
+        <div class="max-w-5xl mx-auto p-6">
+            <!-- Header -->
+            <header
+                class="flex justify-between items-center mb-10 border-b border-zinc-800 pb-6"
+            >
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-8 h-8 bg-indigo-600 rounded flex items-center justify-center text-white font-bold text-lg"
+                    >
+                        C
+                    </div>
+                    <h1 class="text-2xl font-bold text-zinc-100 tracking-tight">
+                        Clonis
+                    </h1>
+                </div>
 
-    <div class="max-w-5xl mx-auto p-6">
-        <!-- Header -->
-        <header class="flex justify-between items-center mb-10 border-b border-zinc-800 pb-6">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-indigo-600 rounded flex items-center justify-center text-white font-bold text-lg">C</div>
-                <h1 class="text-2xl font-bold text-zinc-100 tracking-tight">Clonis</h1>
-            </div>
-            
-            {{if .User}}
-            <a href="/logout" class="text-xs font-medium text-zinc-500 hover:text-red-400 transition uppercase tracking-wider">
-                Log Out
-            </a>
-            {{end}}
-        </header>
+                {{if .User}}
+                <a
+                    href="/logout"
+                    class="text-xs font-medium text-zinc-500 hover:text-red-400 transition uppercase tracking-wider"
+                >
+                    Log Out
+                </a>
+                {{end}}
+            </header>
 
-        <!-- Main Content Injection -->
-        {{template "content" .}}
-        
-    </div>
+            <!-- Main Content Injection -->
+            {{template "content" .}}
+        </div>
 
-</body>
+        <!--Global notification container-->
+        <div
+            id="toast"
+            class="fixed bottom-6 right-6 z-50 transition-all duration-300 transform"
+        ></div>
+    </body>
 </html>
 {{end}}

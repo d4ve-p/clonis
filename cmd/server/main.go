@@ -45,9 +45,19 @@ func main() {
 	// Dashboard
 	dashboardHandler := http.HandlerFunc(uiHandler.DashboardHandler)
 	mux.Handle("/", authManager.Middleware(dashboardHandler))
+	// Dashboard - Browser
+	browserHandler := http.HandlerFunc(uiHandler.BrowseHandler)
+	mux.Handle("/browse", authManager.Middleware(browserHandler))
+	
+	// Path Management
+	addPathHandler := http.HandlerFunc(uiHandler.AddPathHandler)
+	deletePathHandler := http.HandlerFunc(uiHandler.DeletePathHandler)
+	mux.Handle("/add-path", authManager.Middleware(addPathHandler))
+	mux.Handle("/delete-path", authManager.Middleware(deletePathHandler))
 	
 	port := os.Getenv("PORT")
 	log.Printf("Server running on :%v\n", port)
+	
 	err = http.ListenAndServe(":" + port, mux)
 	if err != nil {
 		log.Fatal(err)
