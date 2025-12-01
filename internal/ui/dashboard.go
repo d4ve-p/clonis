@@ -11,19 +11,19 @@ import (
 func (h* Handler) DashboardHandler(w http.ResponseWriter, r *http.Request) {
 	paths, err := h.Store.GetPaths()
 	if err != nil {
-		http.Error(w, "Failed to load paths", http.StatusInternalServerError)
+		h.RenderError(w, "Failed to load paths", err)
 		return
 	}
 	
 	logs, err := h.Store.GetRecentLogs(10)
 	if err != nil {
-		http.Error(w, "Failed to load logs", http.StatusInternalServerError)
+		h.RenderError(w, "Failed to get logs", err)
 		return
 	}
 	
 	settings, err := h.Store.GetSettings()
 	if err != nil {
-		http.Error(w, "Failed to load settings", http.StatusInternalServerError)
+		h.RenderError(w, "Failed to load settings", err)
 		return
 	}
 	

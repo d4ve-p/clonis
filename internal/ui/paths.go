@@ -1,9 +1,11 @@
 package ui
 
 import (
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/d4ve-p/clonis/internal/database"
@@ -20,7 +22,13 @@ func (h *Handler) AddPathHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Basic Validation
 	if pathStr == "" {
-		http.Error(w, "Path is required", http.StatusBadRequest)
+		h.RenderError(w, "Path is required", nil)
+		return
+	}
+	
+	if _, err := os.ReadDir(pathStr); err != nil {
+		h.RenderError(w, "Path does not exist or permisison denied", err)
+		log.Printf("Error adding path: %v", err)
 		return
 	}
 
@@ -28,7 +36,7 @@ func (h *Handler) AddPathHandler(w http.ResponseWriter, r *http.Request) {
 	err := h.Store.AddPath(pathStr, pathType)
 	if err != nil {
 		// check error, eg. unique path constraint
-		log.Printf("Error adding path: %v", err)
+		h.RenderError(w, fmt.Sprintf("Error adding path: %v", err), err)
 	}
 
 	h.renderPathsList(w)
@@ -59,7 +67,7 @@ func (h *Handler) DeletePathHandler(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) renderPathsList(w http.ResponseWriter) {
 	paths, err := h.Store.GetPaths()
 	if err != nil {
-		http.Error(w, "Failed to fetch paths", http.StatusInternalServerError)
+		h.RenderError(w, "Failed to fetch paths", err)
 		return
 	}
 
