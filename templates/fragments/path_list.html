@@ -1,0 +1,25 @@
+<div id="paths-list" class="space-y-3 mb-6">
+    {{range .Paths}}
+    <div class="flex justify-between items-center p-3 bg-zinc-950/50 border border-zinc-800 rounded group hover:border-zinc-600 transition duration-200">
+        <div class="flex items-center space-x-4">
+            <span class="text-zinc-500 text-lg">
+                {{if eq .Type "folder"}}📂{{else}}📄{{end}}
+            </span>
+            <span class="font-mono text-sm text-zinc-300">{{.Path}}</span>
+        </div>
+        
+        <!-- Delete Button -->
+        <button hx-delete="/delete-path?id={{.ID}}" 
+                hx-target="#paths-list" 
+                hx-swap="outerHTML"
+                class="text-zinc-600 hover:text-red-400 transition px-2 py-1 rounded hover:bg-zinc-900 opacity-0 group-hover:opacity-100">
+            &times;
+        </button>
+    </div>
+    {{else}}
+    <div class="text-center py-8 border-2 border-dashed border-zinc-800 rounded">
+        <p class="text-zinc-500 text-sm">No paths configured.</p>
+        <p class="text-zinc-600 text-xs mt-1">Add a file or folder below.</p>
+    </div>
+    {{end}}
+</div>
