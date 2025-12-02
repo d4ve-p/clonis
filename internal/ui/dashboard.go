@@ -4,9 +4,9 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	
+
 	"github.com/d4ve-p/clonis/internal/gdrive"
-	"github.com/d4ve-p/clonis/internal/model"
+	uimodel "github.com/d4ve-p/clonis/internal/ui-model"
 )
 
 func (h* Handler) DashboardHandler(w http.ResponseWriter, r *http.Request) {
@@ -31,7 +31,7 @@ func (h* Handler) DashboardHandler(w http.ResponseWriter, r *http.Request) {
 	driveService := gdrive.Get(h.Store)
 	isConnected := driveService.IsConnected()
 	
-	data := model.DashboardData{
+	data := uimodel.DashboardData{
 		User: true,
 		Paths: paths,
 		Logs: logs,

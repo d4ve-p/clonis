@@ -1,4 +1,4 @@
-package model
+package uimodel
 
 import "github.com/d4ve-p/clonis/internal/database"
 
