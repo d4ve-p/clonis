@@ -19,7 +19,13 @@ type Service struct {
 	config *oauth2.Config
 }
 
-func New(store *database.Store) *Service {
+var service *Service = nil
+
+func Get(store *database.Store) *Service {
+	if service != nil {
+		return service
+	}
+	
 	clientID := os.Getenv("GOOGLE_CLIENT_ID")
 	clientSecret := os.Getenv("GOOGLE_CLIENT_SECRET")
 	appURL := os.Getenv("APP_URL")
@@ -39,10 +45,12 @@ func New(store *database.Store) *Service {
 		Endpoint: google.Endpoint,
 	}
 	
-	return &Service {
+	service = &Service {
 		store: store,
 		config: config,
 	}
+	
+	return service
 }
 
 func (s *Service) GetAuthURL() string {

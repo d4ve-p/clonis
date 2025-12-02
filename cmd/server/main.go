@@ -4,11 +4,12 @@ import (
 	"log"
 	"net/http"
 	"os"
-	
-	"github.com/joho/godotenv"
+
 	"github.com/d4ve-p/clonis/internal/auth"
 	"github.com/d4ve-p/clonis/internal/database"
+	"github.com/d4ve-p/clonis/internal/gdrive"
 	"github.com/d4ve-p/clonis/internal/ui"
+	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -22,8 +23,17 @@ func main() {
 		log.Fatalf("Failed to initialize database: %v", err)
 	}
 	
+	// Drive service
+	driveService := gdrive.Get(dbStore)
+	
 	// UI setup
 	uiHandler := ui.New(dbStore)
+	
+	// Drive handler wrapper
+	driveHandlers := &ui.DriveHandler{
+		UI: uiHandler,
+		Service: driveService,
+	}
 	
 	// Routes setup
 	mux := http.NewServeMux()
@@ -48,6 +58,10 @@ func main() {
 	// Dashboard - Browser
 	browserHandler := http.HandlerFunc(uiHandler.BrowseHandler)
 	mux.Handle("/browse", authManager.Middleware(browserHandler))
+	
+	// Google Drive Routes
+	mux.HandleFunc("/drive/connect", driveHandlers.Connect)
+	mux.HandleFunc("/drive/callback", driveHandlers.Callback)
 	
 	// Path Management
 	addPathHandler := http.HandlerFunc(uiHandler.AddPathHandler)

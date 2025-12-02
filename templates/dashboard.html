@@ -126,9 +126,19 @@
                     <button class="w-full py-2 bg-zinc-100 text-zinc-900 font-medium rounded text-sm hover:bg-white transition">
                         Save Changes
                     </button>
-                    <button class="w-full py-2 border border-indigo-500/30 text-indigo-400 rounded text-sm hover:bg-indigo-500/10 hover:border-indigo-500/50 transition">
-                        Connect Google Drive
-                    </button>
+                    
+                    {{if .DriveLinked}}
+                        <div class="w-full py-2 border border-emerald-500/30 text-emerald-400 rounded text-sm bg-emerald-500/10 flex justify-center items-center gap-2 cursor-default">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            Drive Connected
+                        </div>
+                    {{else}}
+                        <a href="/drive/connect" class="block w-full text-center py-2 border border-indigo-500/30 text-indigo-400 rounded text-sm hover:bg-indigo-500/10 hover:border-indigo-500/50 transition">
+                            Connect Google Drive
+                        </a>
+                    {{end}}
                 </div>
             </div>
         </div>
