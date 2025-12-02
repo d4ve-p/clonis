@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/d4ve-p/clonis/internal/gdrive"
@@ -29,6 +30,14 @@ func (h *DriveHandler) Callback(w http.ResponseWriter, r *http.Request) {
 		h.UI.RenderError(w, "Failed to connect Google Drive.", err)
 		return
 	}
+	
+	folderID, err := h.Service.SetupBackupFolder(r.Context())
+	if err != nil {
+		log.Printf("Failed to setup initial folders: %v", err)
+		h.UI.RenderError(w, "Connected to drive, but failed to initialize backup folders on Drive, see server log", err)
+	}
 
+	log.Printf("Google Drive Connected. Target Folder ID: %s", folderID)
+	
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
