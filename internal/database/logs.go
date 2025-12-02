@@ -2,19 +2,11 @@ package database
 
 import (
 	"database/sql"
-	"time"
+
+	"github.com/d4ve-p/clonis/internal/model"
 )
 
-type LogEntry struct {
-	ID             int
-	Status         string
-	Message        string
-	TotalSizeBytes int64
-	StartedAt      time.Time
-	CompletedAt    *time.Time
-}
-
-func (s *Store) GetRecentLogs(limit int) ([]LogEntry, error) {
+func (s *Store) GetRecentLogs(limit int) ([]model.LogEntry, error) {
 	rows, err := s.Db.Query(`
 		SELECT id, status, message, total_size_bytes, started_at, completed_at 
 		FROM logs 
@@ -25,9 +17,9 @@ func (s *Store) GetRecentLogs(limit int) ([]LogEntry, error) {
 	}
 	defer rows.Close()
 
-	var logs []LogEntry
+	var logs []model.LogEntry
 	for rows.Next() {
-		var l LogEntry
+		var l model.LogEntry
 		var completedAt sql.NullTime
 		
 		if err := rows.Scan(&l.ID, &l.Status, &l.Message, &l.TotalSizeBytes, &l.StartedAt, &completedAt); err != nil {
@@ -41,4 +33,23 @@ func (s *Store) GetRecentLogs(limit int) ([]LogEntry, error) {
 		logs = append(logs, l)
 	}
 	return logs, nil
+}
+
+func (s* Store) CreateLog(log model.LogEntry) (int, error) {
+	res, err := s.Db.Exec(`INSERT INTO Logs (status, message, total_size_bytes, started_at, completed_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP, ?)`, log.Status, log.Message, log.TotalSizeBytes, log.CompletedAt)
+	if err != nil {
+		return -1, err
+	}
+	
+	id, err := res.LastInsertId()
+	if err != nil {
+		return -1, err
+	}
+	
+	return int(id), nil
+}
+
+func (s* Store) UpdateLog(id int, log model.LogEntry) error {
+	_, err := s.Db.Exec(`UPDATE Logs SET status=?, message=?, total_size_bytes=?, started_at=?, completed_at=CURRENT_TIMESTAMP WHERE id=?`, log.Status, log.Message, log.TotalSizeBytes, id)
+	return err
 }
