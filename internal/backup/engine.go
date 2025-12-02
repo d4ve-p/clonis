@@ -44,7 +44,7 @@ func (e *Engine) RunNow(ctx context.Context) error {
 			Message: msg,
 			TotalSizeBytes: size,
 		}); err != nil {
-			log.Prinf("Failed to update log status: %v", err)
+			log.Printf("Failed to update log status: %v", err)
 		}
 	}
 	
