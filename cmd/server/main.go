@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/d4ve-p/clonis/internal/auth"
+	"github.com/d4ve-p/clonis/internal/backup"
 	"github.com/d4ve-p/clonis/internal/database"
 	"github.com/d4ve-p/clonis/internal/gdrive"
 	"github.com/d4ve-p/clonis/internal/ui"
@@ -25,6 +26,7 @@ func main() {
 	
 	// Drive service
 	driveService := gdrive.Get(dbStore)
+	backupEngine := backup.New(dbStore, driveService)
 	
 	// UI setup
 	uiHandler := ui.New(dbStore)
@@ -33,6 +35,12 @@ func main() {
 	driveHandlers := &ui.DriveHandler{
 		UI: uiHandler,
 		Service: driveService,
+	}
+	
+	// Backup handler wrapper
+	backupHandler := &ui.BackupHandler{
+		UI: uiHandler,
+		Engine: backupEngine,
 	}
 	
 	// Routes setup
@@ -62,6 +70,10 @@ func main() {
 	// Google Drive Routes
 	mux.HandleFunc("/drive/connect", driveHandlers.Connect)
 	mux.HandleFunc("/drive/callback", driveHandlers.Callback)
+	
+	// Backup Routes
+	runBackupHandler := http.HandlerFunc(backupHandler.Run)
+	mux.Handle("/backup/run", authManager.Middleware(runBackupHandler))
 	
 	// Path Management
 	addPathHandler := http.HandlerFunc(uiHandler.AddPathHandler)

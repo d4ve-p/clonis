@@ -2,6 +2,7 @@ package backup
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -48,10 +49,25 @@ func (e *Engine) RunNow(ctx context.Context) error {
 		}
 	}
 	
+	if !e.Drive.IsConnected() {
+		updateLogHelper("SKIPPED", "Google Drive is not connected, Please connect in settings", 0)
+		return nil
+	}
+	
+	if _, err := e.Drive.SetupBackupFolder(ctx); err != nil {
+		updateLogHelper("FAILED", "Google Drive connection test failed (Revoked?): "+err.Error(), 0)
+		return err
+	}
+	
 	paths, err := e.Store.GetPaths()
 	if err != nil {
 		updateLogHelper("FAILED", "Database error: " + err.Error(), 0)
 		return err
+	}
+	
+	if len(paths) == 0 {
+		updateLogHelper("CANCELED", "No registered path", 0)
+		return errors.New("No registered path to backup")
 	}
 	
 	// Prepare temp directory

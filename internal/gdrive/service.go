@@ -54,7 +54,7 @@ func Get(store *database.Store) *Service {
 }
 
 func (s *Service) GetAuthURL() string {
-	return s.config.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
+	return s.config.AuthCodeURL("state-token", oauth2.AccessTypeOffline, oauth2.ApprovalForce)
 }
 
 func (s *Service) HandleCallback(ctx context.Context, code string) error {

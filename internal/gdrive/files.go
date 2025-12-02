@@ -2,6 +2,7 @@ package gdrive
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"google.golang.org/api/drive/v3"
@@ -12,6 +13,11 @@ func (s* Service) UploadFile(ctx context.Context, localPath string, filename str
 	folderID, err := s.SetupBackupFolder(ctx)
 	if err != nil {
 		return nil, err
+	}
+	
+	client, err := s.GetClient(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to authenticate: %w", err)
 	}
 	
 	// Open local file
@@ -25,12 +31,6 @@ func (s* Service) UploadFile(ctx context.Context, localPath string, filename str
 	fileMetadata := &drive.File {
 		Name: filename,
 		Parents: []string{folderID},
-	}
-	
-	// Get client and upload
-	client, err := s.GetClient(ctx)
-	if err != nil {
-		return nil, err
 	}
 	
 	driveFile, err := client.Files.Create(fileMetadata).Media(f).Do()
