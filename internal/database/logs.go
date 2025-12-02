@@ -49,7 +49,7 @@ func (s* Store) CreateLog(log model.LogEntry) (int, error) {
 	return int(id), nil
 }
 
-func (s* Store) UpdateLog(id int, log model.LogEntry) error {
-	_, err := s.Db.Exec(`UPDATE Logs SET status=?, message=?, total_size_bytes=?, started_at=?, completed_at=CURRENT_TIMESTAMP WHERE id=?`, log.Status, log.Message, log.TotalSizeBytes, id)
+func (s* Store) UpdateLog(log model.LogEntry) error {
+	_, err := s.Db.Exec(`UPDATE Logs SET status=?, message=?, total_size_bytes=?, completed_at=CURRENT_TIMESTAMP WHERE id=?`, log.Status, log.Message, log.TotalSizeBytes, log.ID)
 	return err
 }
