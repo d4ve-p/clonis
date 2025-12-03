@@ -6,6 +6,7 @@ require github.com/mattn/go-sqlite3 v1.14.32
 
 require (
 	github.com/joho/godotenv v1.5.1
+	github.com/robfig/cron/v3 v3.0.1
 	golang.org/x/oauth2 v0.33.0
 	google.golang.org/api v0.256.0
 )

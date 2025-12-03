@@ -9,6 +9,7 @@ import (
 	"github.com/d4ve-p/clonis/internal/backup"
 	"github.com/d4ve-p/clonis/internal/database"
 	"github.com/d4ve-p/clonis/internal/gdrive"
+	"github.com/d4ve-p/clonis/internal/scheduler"
 	"github.com/d4ve-p/clonis/internal/ui"
 	"github.com/joho/godotenv"
 )
@@ -27,6 +28,11 @@ func main() {
 	// Drive service
 	driveService := gdrive.Get(dbStore)
 	backupEngine := backup.New(dbStore, driveService)
+	
+	// Cron service
+	cronService := scheduler.New(dbStore, backupEngine)
+	cronService.Start()
+	defer cronService.Stop()
 	
 	// UI setup
 	uiHandler := ui.New(dbStore)

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/d4ve-p/clonis/internal/database"
@@ -98,6 +99,18 @@ func (e *Engine) RunNow(ctx context.Context) error {
 	}
 	
 	os.Remove(localZipPath)
+	
+	// Retention Policy
+	settings, _ := e.Store.GetSettings()
+		retentionStr := settings["retention_count"]
+		retention, _ := strconv.Atoi(retentionStr)
+		
+		if retention > 0 {
+			log.Printf("Enforcing retention policy (Keep %d)...", retention)
+			if err := e.Drive.PruneOldBackups(ctx, retention); err != nil {
+				log.Printf("Warning: Failed to prune old backups: %v", err)
+			}
+		}
 	
 	updateLogHelper("SUCCESS", "Backup uploaded successfully!", size)
 	log.Println("Backup job successfully completed")
