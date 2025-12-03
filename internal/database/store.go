@@ -19,7 +19,7 @@ func GetDatabase() (*Store, error) {
 		return s_db, nil
 	}
 
-	dbPath := "/config/clonis.db"
+	dbPath := "./clonis_data/clonis.db"
 
 	if err := os.MkdirAll(filepath.Dir(dbPath), 0755); err != nil {
 		return nil, err
