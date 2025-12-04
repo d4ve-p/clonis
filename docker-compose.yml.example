@@ -1,0 +1,15 @@
+services:
+  clonis:
+    build: .
+    container_name: clonis
+    restart: unless-stopped
+    ports:
+      - "3130:8080"
+    volumes:
+      # Persist app data (DB, logs, tokens)
+      - ./clonis_data:/config
+      # MOUNT HOST FILESYSTEM (Read-Only)
+      # We mount the host's root to /hostfs inside the container
+      - /:/hostfs:ro
+    environment:
+      - APP_ENV=production
