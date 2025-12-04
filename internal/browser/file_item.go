@@ -45,6 +45,10 @@ func GetPath(path string) ([]FileItem, error) {
 		itemType := File
 		if e.IsDir() {
 			itemType = Folder
+		} else if e.Type()&os.ModeSymlink != 0 {
+			if info, err := os.Stat(fullPath); err == nil && info.IsDir() {
+				itemType = Folder
+			}
 		}
 		
 		items = append(items, FileItem{

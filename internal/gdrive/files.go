@@ -40,3 +40,46 @@ func (s* Service) UploadFile(ctx context.Context, localPath string, filename str
 	
 	return driveFile, nil
 }
+
+func (s *Service) PruneOldBackups(ctx context.Context, retentionCount int) error {
+	if retentionCount < 1 {
+		return nil
+	}
+
+	folderID, err := s.SetupBackupFolder(ctx)
+	if err != nil {
+		return err
+	}
+
+	client, err := s.GetClient(ctx)
+	if err != nil {
+		return err
+	}
+
+	query := fmt.Sprintf("'%s' in parents and trashed = false", folderID)
+	list, err := client.Files.List().
+		Q(query).
+		OrderBy("createdTime").
+		Fields("files(id, name, createdTime)").
+		Do()
+	if err != nil {
+		return fmt.Errorf("failed to list files for pruning: %w", err)
+	}
+
+	totalFiles := len(list.Files)
+	if totalFiles <= retentionCount {
+		return nil // No cleanup needed
+	}
+
+	toDeleteCount := totalFiles - retentionCount
+	
+	for i := range toDeleteCount {
+		file := list.Files[i]
+		if err := client.Files.Delete(file.Id).Do(); err != nil {
+			fmt.Printf("Failed to delete old backup %s: %v\n", file.Name, err)
+			continue
+		}
+	}
+
+	return nil
+}

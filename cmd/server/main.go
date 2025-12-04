@@ -9,6 +9,7 @@ import (
 	"github.com/d4ve-p/clonis/internal/backup"
 	"github.com/d4ve-p/clonis/internal/database"
 	"github.com/d4ve-p/clonis/internal/gdrive"
+	"github.com/d4ve-p/clonis/internal/scheduler"
 	"github.com/d4ve-p/clonis/internal/ui"
 	"github.com/joho/godotenv"
 )
@@ -28,6 +29,11 @@ func main() {
 	driveService := gdrive.Get(dbStore)
 	backupEngine := backup.New(dbStore, driveService)
 	
+	// Cron service
+	cronService := scheduler.New(dbStore, backupEngine)
+	cronService.Start()
+	defer cronService.Stop()
+	
 	// UI setup
 	uiHandler := ui.New(dbStore)
 	
@@ -41,6 +47,12 @@ func main() {
 	backupHandler := &ui.BackupHandler{
 		UI: uiHandler,
 		Engine: backupEngine,
+	}
+	
+	// Settings handler
+	settingsHandler := &ui.SettingsHandler{
+		UI: uiHandler,
+		Scheduler: cronService,
 	}
 	
 	// Routes setup
@@ -66,6 +78,10 @@ func main() {
 	// Dashboard - Browser
 	browserHandler := http.HandlerFunc(uiHandler.BrowseHandler)
 	mux.Handle("/browse", authManager.Middleware(browserHandler))
+	
+	// Settings Route
+	settingsHandlerWrapper := http.HandlerFunc(settingsHandler.Update)
+	mux.Handle("/settings/update", authManager.Middleware(settingsHandlerWrapper))
 	
 	// Google Drive Routes
 	mux.HandleFunc("/drive/connect", driveHandlers.Connect)
