@@ -1,7 +1,6 @@
 package scheduler
 
 import (
-	"context"
 	"log"
 
 	"github.com/d4ve-p/clonis/internal/backup"
@@ -13,6 +12,7 @@ type Service struct {
 	Cron   *cron.Cron
 	Store  *database.Store
 	Engine *backup.Engine
+	entryID cron.EntryID
 }
 
 func New(store *database.Store, engine *backup.Engine) *Service {
@@ -24,33 +24,17 @@ func New(store *database.Store, engine *backup.Engine) *Service {
 }
 
 func (s* Service) Start() {
-	log.Printf("Scheduler Service Starting...")
-	
-	settings, err := s.Store.GetSettings()
-	if err != nil {
-		log.Printf("Scheduler Error: Could not load settings: %v", err)
-		return
-	}
-	
-	interval := settings["backup_interval"]
-	if interval == "" {
-		interval = "0 3 * * *"
-		// interval = "@every 20s" // Debug
-	}
-	
-	_, err = s.Cron.AddFunc(interval, func() {
-		log.Println("⏰ Cron Triggered: Starting Backup...")
-		if err := s.Engine.RunNow(context.Background()); err != nil {
-			log.Printf("⏰ Cron Job Failed: %v", err)
-		}
-	})
-	
-	if err != nil {
-		log.Printf("CRITICAL: Invalid cron schedule '%s': %v", interval, err)
-		return		
-	}
-	
+	s.scheduleJob()
 	s.Cron.Start()
+}
+
+func (s* Service) Restart() {
+	if s.entryID != 0 {
+		s.Cron.Remove(s.entryID)
+	}
+	
+	log.Println("♻️  Scheduler Restarting with new settings...")
+	s.scheduleJob()
 }
 
 func (s *Service) Stop() {
