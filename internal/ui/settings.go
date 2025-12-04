@@ -21,7 +21,7 @@ func (h *SettingsHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 	
 	interval := strings.TrimSpace(r.FormValue("backup_interval"))
-	retention := strings.TrimSpace(r.FormValue("retention"))
+	retention := strings.TrimSpace(r.FormValue("retention_count"))
 	
 	// Validate retention is a number
 	retention_int, err := strconv.Atoi(retention)

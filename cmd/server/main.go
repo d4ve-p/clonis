@@ -49,6 +49,12 @@ func main() {
 		Engine: backupEngine,
 	}
 	
+	// Settings handler
+	settingsHandler := &ui.SettingsHandler{
+		UI: uiHandler,
+		Scheduler: cronService,
+	}
+	
 	// Routes setup
 	mux := http.NewServeMux()
 	
@@ -72,6 +78,10 @@ func main() {
 	// Dashboard - Browser
 	browserHandler := http.HandlerFunc(uiHandler.BrowseHandler)
 	mux.Handle("/browse", authManager.Middleware(browserHandler))
+	
+	// Settings Route
+	settingsHandlerWrapper := http.HandlerFunc(settingsHandler.Update)
+	mux.Handle("/settings/update", authManager.Middleware(settingsHandlerWrapper))
 	
 	// Google Drive Routes
 	mux.HandleFunc("/drive/connect", driveHandlers.Connect)
