@@ -12,13 +12,13 @@ Get Clonis running in under 30 seconds.
 
 1.  **Download the Recipe**
     ```bash
-    curl -o docker-compose.yml [https://raw.githubusercontent.com/d4ve-p/clonis/main/docker-compose.yml](https://raw.githubusercontent.com/d4ve-p/clonis/main/docker-compose.yml)
+    curl -o docker-compose.yaml https://raw.githubusercontent.com/d4ve-p/clonis/main/docker-compose.yaml
     ```
 
 2.  **Define Environment**
     Open the file and update the `SERVER_NAME` to identify this machine.
     ```bash
-    nano docker-compose.yml
+    nano docker-compose.yaml
     ```
 
 3.  **Ignition**
