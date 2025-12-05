@@ -1,35 +1,11 @@
-FROM golang:1.25.4-alpine AS builder
-
-ARG TARGETOS
-ARG TARGETARCH
-
-WORKDIR /app
-
-RUN apk add --no-cache gcc musl-dev
-
-COPY go.mod go.sum ./
-RUN go mod download
-
-COPY . .
-
-RUN CGO_ENABLED=1 GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
-    go build -a -ldflags '-linkmode external -extldflags "-static"' -o clonis ./cmd/server
-
-# Run Stage
+# Dockerfile
 FROM alpine:latest
 
-WORKDIR /root/
+# This magic variable is passed by GoReleaser's buildx command
+ARG TARGETPLATFORM
 
-# Install ca-certificates for SSL and sqlite cli for debugging
-RUN apk --no-cache add ca-certificates sqlite
+# Don't COPY go.sum or go.mod. 
+# Just copy the binary that GoReleaser ALREADY built.
+COPY ${TARGETPLATFORM}/clonis /usr/bin/clonis
 
-# Copy binary and assets from the builder
-COPY --from=builder /app/clonis .
-COPY --from=builder /app/static ./static
-COPY --from=builder /app/templates ./templates
-
-EXPOSE 8080
-
-VOLUME ["/config"]
-
-CMD ["./clonis"]
+ENTRYPOINT ["/usr/bin/clonis"]
