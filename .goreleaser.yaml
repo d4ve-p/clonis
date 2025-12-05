@@ -1,5 +1,19 @@
 # .goreleaser.yaml
+version: 2
 
+
+builds:
+  - id: clonis
+    main: ./cmd/server/main.go 
+    binary: clonis
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows 
+    goarch:
+      - amd64
+      - arm64
 dockers:
   - image_templates:
       - "yurianko/clonis:{{ .Version }}"
