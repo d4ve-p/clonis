@@ -1,7 +1,36 @@
 # 🚀 Clonis
 **Clonis is a lightweight, self-hosted backup automation tool designed for transient VPS infrastructure.**
 
+
 It streamlines the lifecycle of "VPS Hopping" (migrating between providers for cost optimization) by automating directory syncing to Google Drive via a minimal HTMX web dashboard. Built for reliability, low resource footprint, and zero-dependency deployments.
+
+---
+
+## 🚀 Quick Start
+
+Get Clonis running in under 30 seconds.
+
+1.  **Download the Recipe**
+    ```bash
+    curl -o docker-compose.yml [https://raw.githubusercontent.com/d4ve-p/clonis/main/docker-compose.yml](https://raw.githubusercontent.com/d4ve-p/clonis/main/docker-compose.yml)
+    ```
+
+2.  **Define Environment**
+    Open the file and update the `SERVER_NAME` to identify this machine.
+    ```bash
+    nano docker-compose.yml
+    ```
+
+3.  **Ignition**
+    Start the container in detached mode.
+    ```bash
+    docker compose up -d
+    ```
+
+4.  **Launch**
+    Visit [http://localhost:8080](http://localhost:8080).
+    > 💡 **Note:** Your backup configurations and database are safely persisted in the local `./config` directory.
+
 ---
 
 # ✨ Key Features
@@ -15,35 +44,15 @@ It streamlines the lifecycle of "VPS Hopping" (migrating between providers for c
 # 🛠 Architecture & Logic
 Clonis enforces a strict "Server-Root" hierarchy to prevent data collisions when managing multiple VPS instances.
 
-1. **Initialization**: On startup, Clonis authenticates and establishes a Clonis/ root in the connected Drive.
+1. **Initialization**: On startup, Clonis authenticates and establishes a Clonis/ root in the connected Drive (If user has made a connection previously).
 2. **Server Namespace**: Creates a sub-directory based on the `SERVER_NAME` environment variable (e.g., `Clonis/DigitalOcean-SG1/`).
 3. **Path Mapping**: Registered local paths are mirrored inside the namespace, preserving the directory structure.
     - *Local*: `/var/www/html`
     - *Remote*: `Clonis/DigitalOcean-SG1/var/www/html`
+4. **Compressing**: Clonis compresses the mirrored paths into a single archive before uploading to Google Drive.
+5. **Retention**: Clonis retains backups for a configurable period, deleting older versions automatically.
+
 ---
-# 🚀 Quick Start
-**Prerequisites**
-  - Docker & Docker Compose
-  - Google Cloud Service Account Credentials (`credentials.json`)
-
-**Installation**
-1. **Clone the repository**
-    ```Bash
-    git clone https://github.com/d4ve-p/clonis.git
-    cd clonis
-    ```
-2. **Configure Environment**
-    ```Bash
-    cp .env.example .env
-    # Edit .env to set SERVER_NAME and PORT
-    ```
-3. **Run with Docker**
-    ```Bash
-    docker-compose up -d
-
-    Access the Dashboard Visit http://localhost:3130 to manage backup paths.
-    ```
-
 # 🔧 Tech Stack
 - **Core**: Go (Golang)
 - **Frontend**: HTMX + Go Templates (Server Side Rendering)
