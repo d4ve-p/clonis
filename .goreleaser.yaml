@@ -1,7 +1,6 @@
 # .goreleaser.yaml
 version: 2
 
-
 builds:
   - id: clonis
     main: ./cmd/server/main.go 
@@ -14,18 +13,35 @@ builds:
     goarch:
       - amd64
       - arm64
+      
 dockers:
   - image_templates:
-      - "yurianko/clonis:{{ .Version }}"
-      - "yurianko/clonis:latest"
-    
+      - "yurianko/clonis:{{ .Version }}-amd64"
     use: buildx
-    
     goos: linux
     goarch: amd64
-    
     build_flag_templates:
-      - "--platform=linux/amd64,linux/arm64"
+      - "--platform=linux/amd64"
       - "--label=org.opencontainers.image.title={{ .ProjectName }}"
-      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
       - "--label=org.opencontainers.image.version={{ .Version }}"
+
+  - image_templates:
+      - "yurianko/clonis:{{ .Version }}-arm64"
+    use: buildx
+    goos: linux
+    goarch: arm64
+    build_flag_templates:
+      - "--platform=linux/arm64"
+      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+
+docker_manifests:
+  - name_template: "yurianko/clonis:{{ .Version }}"
+    image_templates:
+      - "yurianko/clonis:{{ .Version }}-amd64"
+      - "yurianko/clonis:{{ .Version }}-arm64"
+
+  - name_template: "yurianko/clonis:latest"
+    image_templates:
+      - "yurianko/clonis:{{ .Version }}-amd64"
+      - "yurianko/clonis:{{ .Version }}-arm64"
