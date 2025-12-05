@@ -98,6 +98,9 @@ func main() {
 	mux.Handle("/delete-path", authManager.Middleware(deletePathHandler))
 	
 	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
 	log.Printf("Server running on :%v\n", port)
 	
 	err = http.ListenAndServe(":" + port, mux)
