@@ -20,7 +20,7 @@ func (h *Handler) BrowseHandler(w http.ResponseWriter, r *http.Request) {
 		defaultPath = "/hostfs"
 	}
 	
-	if !strings.HasPrefix(path, defaultPath) {
+	if !strings.HasPrefix(path, defaultPath + "/") {
 		path = defaultPath
 	}
 	
