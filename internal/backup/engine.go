@@ -26,6 +26,14 @@ func New(store *database.Store, drive *gdrive.Service) *Engine {
 	}
 }
 
+func CleanUpTempFiles() error {
+	log.Println("Cleaning up temp files from previous sessions...")
+
+	tmpDir := os.TempDir()
+
+	return os.RemoveAll(tmpDir + "/")
+}
+
 func (e *Engine) RunNow(ctx context.Context) error {
 	// Create initial log entry
 	logID, err := e.Store.CreateLog(model.LogEntry{
@@ -75,6 +83,9 @@ func (e *Engine) RunNow(ctx context.Context) error {
 	tmpDir := os.TempDir()
 	fileName := fmt.Sprintf("backup_%s.zip", time.Now().Format("2006-01-02_15-04-05"))
 	localZipPath := fmt.Sprintf("%s/%s", tmpDir, fileName)
+
+	// Ensures that Zip is always cleaned up after function exits
+	defer os.Remove(localZipPath); 
 	
 	// Creating an archive
 	log.Printf("Zipping files to %s...", localZipPath)
