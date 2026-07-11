@@ -18,6 +18,11 @@ func main() {
 	log.Println("Clonis Backup Manager Starting...")
 	
 	godotenv.Load()
+
+	// Cleanup temp files
+	if err := backup.CleanUpTempFiles(); err != nil {
+		log.Fatalf("Failed to clean up temp files: %v", err)
+	}
 	
 	// DB setup
 	dbStore, err := database.GetDatabase()

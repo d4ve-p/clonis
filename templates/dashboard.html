@@ -95,7 +95,7 @@
                         {{range .Logs}}
                         <tr class="hover:bg-zinc-800/50 transition">
                             <td class="px-6 py-3">
-                                <span class="{{if eq .Status "SUCCESS"}}text-emerald-400 bg-emerald-400/10 border-emerald-400/20{{else}}text-rose-400 bg-rose-400/10 border-rose-400/20{{end}} px-2 py-0.5 rounded text-xs border font-medium">
+                                <span class="{{if eq .Status "SUCCESS"}}text-emerald-400 bg-emerald-400/10 border-emerald-400/20{{else if eq .Status "IN_PROGRESS"}}text-blue-400 bg-blue-400/10 border-blue-400/20{{else if eq .Status "SKIPPED"}}text-amber-400 bg-amber-400/10 border-amber-400/20{{else if eq .Status "CANCELED"}}text-zinc-400 bg-zinc-400/10 border-zinc-400/20{{else}}text-rose-400 bg-rose-400/10 border-rose-400/20{{end}} px-2 py-0.5 rounded text-xs border font-medium">
                                     {{.Status}}
                                 </span>
                             </td>
