@@ -103,7 +103,7 @@ func (s *Service) IsConnected() bool {
 		return false
 	}
 	
-	_, ok := settings["gdrive_token"]
-	return ok
+	token, ok := settings["gdrive_token"]
+	return ok && token != ""
 }
 

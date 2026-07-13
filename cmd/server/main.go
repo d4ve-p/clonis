@@ -91,6 +91,8 @@ func main() {
 	// Google Drive Routes
 	mux.HandleFunc("/drive/connect", driveHandlers.Connect)
 	mux.HandleFunc("/drive/callback", driveHandlers.Callback)
+	disconnectHandler := http.HandlerFunc(driveHandlers.Disconnect)
+	mux.Handle("/drive/disconnect", authManager.Middleware(disconnectHandler))
 	
 	// Backup Routes
 	runBackupHandler := http.HandlerFunc(backupHandler.Run)
