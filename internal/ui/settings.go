@@ -48,7 +48,7 @@ func (h *SettingsHandler) Update(w http.ResponseWriter, r *http.Request) {
 		h.UI.RenderError(w, "Failed to save interval to database", err)
 		return
 	}
-	if err := h.UI.Store.UpdateSetting("retention", retention); err != nil {
+	if err := h.UI.Store.UpdateSetting("retention_count", retention); err != nil {
 		h.UI.RenderError(w, "Failed to save retention to database", err)
 		return
 	}
