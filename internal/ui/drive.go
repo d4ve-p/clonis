@@ -41,19 +41,3 @@ func (h *DriveHandler) Callback(w http.ResponseWriter, r *http.Request) {
 	
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
-
-func (h *DriveHandler) Disconnect(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	if err := h.UI.Store.UpdateSetting("gdrive_token", ""); err != nil {
-		log.Printf("Failed to disconnect drive: %v", err)
-		h.UI.RenderError(w, "Failed to disconnect Google Drive.", err)
-		return
-	}
-
-	log.Println("Google Drive Disconnected.")
-	http.Redirect(w, r, "/", http.StatusSeeOther)
-}
