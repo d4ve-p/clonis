@@ -35,7 +35,7 @@ func GetDatabase() (*Store, error) {
 		return nil, err
 	}
 
-	s_db := &Store{Db: db}
+	s_db = &Store{Db: db}
 	if err := s_db.migrate(); err != nil {
 		return nil, err
 	}

@@ -18,6 +18,11 @@ func main() {
 	log.Println("Clonis Backup Manager Starting...")
 	
 	godotenv.Load()
+
+	// Cleanup temp files
+	if err := backup.CleanUpTempFiles(); err != nil {
+		log.Fatalf("Failed to clean up temp files: %v", err)
+	}
 	
 	// DB setup
 	dbStore, err := database.GetDatabase()
@@ -86,6 +91,8 @@ func main() {
 	// Google Drive Routes
 	mux.HandleFunc("/drive/connect", driveHandlers.Connect)
 	mux.HandleFunc("/drive/callback", driveHandlers.Callback)
+	disconnectHandler := http.HandlerFunc(driveHandlers.Disconnect)
+	mux.Handle("/drive/disconnect", authManager.Middleware(disconnectHandler))
 	
 	// Backup Routes
 	runBackupHandler := http.HandlerFunc(backupHandler.Run)
