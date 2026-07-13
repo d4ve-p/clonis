@@ -1,6 +1,9 @@
 package ui
 
 import (
+	"context"
+	"errors"
+	"log"
 	"net/http"
 
 	"github.com/d4ve-p/clonis/internal/backup"
@@ -18,10 +21,16 @@ func (h *BackupHandler) Run(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-	if err := h.Engine.RunNow(r.Context()); err != nil {
-		h.UI.RenderError(w, "Backup Error: " + err.Error(), err)
+	if h.Engine.IsRunning() {
+		h.UI.RenderError(w, "Backup is already in progress", errors.New("concurrent backup request ignored"))
 		return
 	}
+	
+	go func() {
+		if err := h.Engine.RunNow(context.Background()); err != nil {
+			log.Printf("Manual backup failed: %v", err)
+		}
+	}()
 	
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

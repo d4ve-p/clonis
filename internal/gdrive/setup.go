@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 
 	"google.golang.org/api/drive/v3"
 )
@@ -34,7 +35,8 @@ func (s *Service) SetupBackupFolder(ctx context.Context) (string, error) {
 }
 
 func (s *Service) getOrCreateFolder(srv *drive.Service, name string, parentID string) (string, error) {
-	query := fmt.Sprintf("mimeType = 'application/vnd.google-apps.folder' and name = '%s' and trashed = false", name)
+	escapedName := strings.ReplaceAll(name, "'", "\\'")
+	query := fmt.Sprintf("mimeType = 'application/vnd.google-apps.folder' and name = '%s' and trashed = false", escapedName)
 	if parentID != "" {
 		query += fmt.Sprintf(" and '%s' in parents", parentID)
 	}
